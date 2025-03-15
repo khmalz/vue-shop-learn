@@ -13,12 +13,25 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: "/shop",
-    name: "shop",
-    component: () => import("../views/ShopView.vue"),
-    meta: {
-      order: 2,
-      requiresAuth: false,
-    },
+    children: [
+      {
+        path: "",
+        name: "shop",
+        component: () => import("../views/ShopView.vue"),
+        meta: {
+          order: 2,
+          requiresAuth: false,
+        },
+      },
+      {
+        path: "create",
+        name: "add_product",
+        component: () => import("../views/ShopAddView.vue"),
+        meta: {
+          requiresAuth: false,
+        },
+      },
+    ],
   },
 ];
 

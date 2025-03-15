@@ -11,6 +11,7 @@ onMounted(() => {
 
 const navList: RouterList[] = router
   .getRoutes()
+  .filter((route) => route.meta.order)
   .sort((a, b) => a.meta.order - b.meta.order)
   .map((route) => ({
     name: route.name as keyof RouteNamedMap,

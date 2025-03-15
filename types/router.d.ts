@@ -3,8 +3,13 @@ import type { RouteRecordInfo } from "vue-router";
 
 export interface RouteNamedMap {
   home: RouteRecordInfo<"home", "/", Record<never, never>, Record<never, never>>;
-  about: RouteRecordInfo<"about", "/about", Record<never, never>, Record<never, never>>;
-  team: RouteRecordInfo<"team", "/about/team", Record<never, never>, Record<never, never>>;
+  shop: RouteRecordInfo<"shop", "/shop", Record<never, never>, Record<never, never>>;
+  add_product: RouteRecordInfo<
+    "add-product",
+    "/shop/create",
+    Record<never, never>,
+    Record<never, never>
+  >;
   "not-found": RouteRecordInfo<"not-found", "/:path(.*)", { path: string }, { path: string }>;
 }
 
@@ -15,7 +20,7 @@ declare module "vue-router" {
 
   interface RouteMeta {
     isAdmin?: boolean;
-    order: number;
+    order?: number;
     requiresAuth: boolean;
   }
 

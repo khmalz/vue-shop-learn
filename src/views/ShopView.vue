@@ -6,7 +6,7 @@ import { convertToProductsType } from "@/helpers/productMapper";
 import type { Product } from "types/products";
 import CardProduct from "@/components/CardProduct.vue";
 
-const rawProducts = useCollection(productsRef);
+const rawProducts = useCollection(productsRef, { once: true });
 
 const products = computed<Product[]>(() => rawProducts.value?.map(convertToProductsType) ?? []);
 </script>
@@ -14,8 +14,22 @@ const products = computed<Product[]>(() => rawProducts.value?.map(convertToProdu
 <template>
   <main>
     <div>
-      <h1 class="text-3xl font-bold capitalize mb-5">hello shop</h1>
-      <div v-if="products.length > 0" class="flex w-full gap-x-2">
+      <div class="flex justify-between w-full">
+        <h1 class="text-3xl font-bold capitalize mb-5">hello shop</h1>
+        <div>
+          <router-link
+            :to="{ name: 'add_product' }"
+            type="button"
+            class="px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
+          >
+            Add Product
+          </router-link>
+        </div>
+      </div>
+      <div
+        v-if="products.length > 0"
+        class="w-full grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4"
+      >
         <CardProduct v-for="product in products" :key="product.name" :product="product" />
       </div>
       <p v-else>Loading...</p>
