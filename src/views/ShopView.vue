@@ -1,14 +1,22 @@
 <script setup lang="ts">
 import { useCollection } from "vuefire";
-import { computed } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { productsRef } from "@/lib/firebase";
 import { convertToProductsType } from "@/helpers/productMapper";
 import type { Product } from "types/products";
 import CardProduct from "@/components/CardProduct.vue";
 
-const rawProducts = useCollection(productsRef, { once: true });
+const products = ref<Product[]>([]);
 
-const products = computed<Product[]>(() => rawProducts.value?.map(convertToProductsType) ?? []);
+onMounted(() => {
+  const rawProducts = useCollection(productsRef, { once: true });
+
+  watchEffect(() => {
+    if (rawProducts.value) {
+      products.value = rawProducts.value.map(convertToProductsType);
+    }
+  });
+});
 </script>
 
 <template>

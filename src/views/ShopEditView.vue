@@ -56,8 +56,8 @@
         <LabelForm for="uploadImage" text="Image" />
         <div class="flex gap-y-3 flex-col">
           <img
-            v-if="uploadedImage"
-            :src="uploadedImageUrl"
+            v-if="uploadedImage || formData.image"
+            :src="uploadedImageUrl || formData.image"
             alt="image"
             class="w-48 h-48 object-cover rounded-md shadow-md"
           />
@@ -67,7 +67,7 @@
           >
             <p v-if="uploadedImageName">{{ uploadedImageName }}</p>
             <div v-else>
-              <p>Upload a new image</p>
+              <p>Upload a new image? click this</p>
               <p>Maximum upload size is <span class="font-semibold">1 MB</span></p>
             </div>
           </label>
@@ -106,7 +106,7 @@
           :loading="loading"
           class="!bg-blue-600 hover:!bg-blue-700 focus-visible:!outline-blue-700 disabled:!bg-blue-800 w-full"
         >
-          Submit
+          Save Changes
         </Button>
       </div>
     </form>
@@ -119,12 +119,34 @@ import InputForm from "@/components/InputForm.vue";
 import LabelForm from "@/components/LabelForm.vue";
 import SelectForm from "@/components/SelectForm.vue";
 import TextareaForm from "@/components/TextareaForm.vue";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watchEffect } from "vue";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
-import { useFirebaseStorage } from "vuefire";
-import { addDoc, doc, updateDoc } from "firebase/firestore";
+import { useDocument, useFirebaseStorage } from "vuefire";
+import { doc, updateDoc } from "firebase/firestore";
 import { productsRef } from "@/lib/firebase";
+import type { Product } from "types/products";
+import { convertToProductsType } from "@/helpers/productMapper";
 import router from "@/router";
+
+const product = ref<Product>();
+
+const props = defineProps<{
+  id: string;
+}>();
+
+onMounted(() => {
+  console.log(props.id);
+  const rawProduct = useDocument(doc(productsRef, props.id));
+
+  watchEffect(() => {
+    if (rawProduct.value) {
+      product.value = convertToProductsType(rawProduct.value);
+      formData.value = product.value;
+
+      console.log("Produk berhasil di-fetch:", product.value);
+    }
+  });
+});
 
 const formData = ref({
   name: "",
@@ -192,18 +214,16 @@ const handleSubmit = async () => {
   loading.value = true;
 
   try {
-    const docRef = await addDoc(productsRef, formData.value);
-
-    const newDocId = docRef.id;
+    const newProductRef = doc(productsRef, props.id);
+    await updateDoc(newProductRef, formData.value);
 
     if (uploadedImage.value) {
-      await uploadFile(newDocId);
+      await uploadFile(props.id);
 
-      const newProductRef = doc(productsRef, newDocId);
       await updateDoc(newProductRef, { image: formData.value.image });
     }
 
-    console.log("Produk berhasil ditambahkan!");
+    console.log("Produk berhasil diupdate!");
 
     formData.value = {
       name: "",
@@ -221,7 +241,7 @@ const handleSubmit = async () => {
     };
     uploadedImage.value = null;
   } catch (error) {
-    console.error("Gagal menambahkan produk:", error);
+    console.error("Gagal mengedit produk:", error);
   } finally {
     loading.value = false;
   }

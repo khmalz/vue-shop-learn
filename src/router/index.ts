@@ -31,6 +31,15 @@ const routes: RouteRecordRaw[] = [
           requiresAuth: false,
         },
       },
+      {
+        path: "edit/:id",
+        name: "update_product",
+        props: true,
+        component: () => import("../views/ShopEditView.vue"),
+        meta: {
+          requiresAuth: false,
+        },
+      },
     ],
   },
 ];

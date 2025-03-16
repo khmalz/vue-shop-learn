@@ -3,6 +3,7 @@ import type { DocumentData } from "firebase/firestore";
 
 export function convertToProductsType(doc: DocumentData): Product {
   return {
+    id: doc.id,
     category: doc.category || "",
     description: doc.description || "",
     image: doc.image || "",

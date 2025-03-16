@@ -10,6 +10,12 @@ export interface RouteNamedMap {
     Record<never, never>,
     Record<never, never>
   >;
+  update_product: RouteRecordInfo<
+    "update-product",
+    "/shop/edit",
+    Record<never, never>,
+    Record<never, never>
+  >;
   "not-found": RouteRecordInfo<"not-found", "/:path(.*)", { path: string }, { path: string }>;
 }
 

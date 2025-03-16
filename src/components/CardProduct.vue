@@ -1,4 +1,3 @@
-import { Product } from '../../firestore_db';
 <template>
   <div>
     <div className="flex hover:scale-103 transition-all ease-in-out">
@@ -27,6 +26,14 @@ import { Product } from '../../firestore_db';
               convertIDR(product.price)
             }}</span>
           </div>
+          <div class="flex mt-3">
+            <router-link :to="{ name: 'update_product', params: { id: product.id } }">
+              <Button
+                class="!bg-cyan-600 hover:!bg-cyan-700 focus-visible:!outline-cyan-700 disabled:!bg-cyan-800"
+                >Edit</Button
+              >
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -36,6 +43,7 @@ import { Product } from '../../firestore_db';
 <script setup lang="ts">
 import { convertIDR } from "@/helpers/convertIDR";
 import type { Product } from "types/products";
+import Button from "./Button.vue";
 
 const { product } = defineProps<{
   path?: string;
