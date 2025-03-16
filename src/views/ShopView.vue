@@ -9,7 +9,7 @@ import CardProduct from "@/components/CardProduct.vue";
 const products = ref<Product[]>([]);
 
 onMounted(() => {
-  const rawProducts = useCollection(productsRef, { once: true });
+  const rawProducts = useCollection(productsRef);
 
   watchEffect(() => {
     if (rawProducts.value) {

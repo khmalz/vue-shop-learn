@@ -26,13 +26,18 @@
               convertIDR(product.price)
             }}</span>
           </div>
-          <div class="flex mt-3">
+          <div class="flex mt-3 gap-x-1">
             <router-link :to="{ name: 'update_product', params: { id: product.id } }">
               <Button
                 class="!bg-cyan-600 hover:!bg-cyan-700 focus-visible:!outline-cyan-700 disabled:!bg-cyan-800"
                 >Edit</Button
               >
             </router-link>
+            <Button
+              @click="() => confirmDelete(product.id)"
+              class="!bg-rose-600 hover:!bg-rose-700 focus-visible:!outline-rose-700 disabled:!bg-rose-800"
+              >Delete</Button
+            >
           </div>
         </div>
       </div>
@@ -44,9 +49,40 @@
 import { convertIDR } from "@/helpers/convertIDR";
 import type { Product } from "types/products";
 import Button from "./Button.vue";
+import { deleteDoc, doc } from "firebase/firestore";
+import { productsRef } from "@/lib/firebase";
+import { deleteObject, getStorage, ref as storageRef } from "firebase/storage";
 
 const { product } = defineProps<{
   path?: string;
   product: Product;
 }>();
+
+const confirmDelete = (productId: string) => {
+  if (confirm("Are you sure?")) {
+    deleteProduct(productId);
+  }
+};
+
+const deleteImage = async (imagePath: string) => {
+  const storage = getStorage();
+
+  try {
+    const imageRef = storageRef(storage, imagePath);
+    await deleteObject(imageRef);
+    console.log("Gambar berhasil dihapus dari Storage");
+  } catch (error) {
+    console.error("Gagal menghapus gambar:", error);
+  }
+};
+
+const deleteProduct = async (productId: string) => {
+  try {
+    await deleteImage(`images/products/${productId}/main.jpg`);
+    await deleteDoc(doc(productsRef, productId));
+    console.log(`Produk dengan ID ${productId} berhasil dihapus dari Firestore`);
+  } catch (error) {
+    console.error("Gagal menghapus produk:", error);
+  }
+};
 </script>
